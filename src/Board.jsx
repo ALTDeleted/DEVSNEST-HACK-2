@@ -147,7 +147,6 @@ const Board = () => {
     //pencil event listener
     const pencilTool = document.querySelector(".pencil")
     pencilTool.addEventListener('click', (e)=>{
-      pencilTool.cl
       draw=drawLine;
     }, false);
 
@@ -158,6 +157,8 @@ const Board = () => {
       console.log(colorPicker)
 
     },false)
+
+    const tools = document.querySelectorAll('tool');
 
     //----------- limit the number of events per second -----------------------
 
