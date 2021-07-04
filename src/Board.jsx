@@ -1,9 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-import onMouseDown from "./MouseEvents/MouseDown"
-import onMouseUp from "./MouseEvents/MouseUp" 
-import onMouseMove from "./MouseEvents/MouseMove"; 
-import {drawLine, drawCircle} from "./MouseEvents/DrawLine"; 
-
+import { drawLine, drawCircle } from "./MouseEvents/DrawLine";
+import Tools from "./Tools"
 
 
 import io from 'socket.io-client';
@@ -22,15 +19,53 @@ const Board = () => {
     const canvas = canvasRef.current;
     const test = colorsRef.current;
     const context = canvas.getContext('2d');
-    
-    let socket = io.connect("http//localhost:8080");
-    socket.on("drawing",(data)=>{
-      let img = new Image()
-      img.onload=()=>{
-        context.drawImage(img,0,0)
-      }
-      img.src=data;
-    })
+
+    // -----------------add event listeners to our canvas ----------------------
+
+  const onMouseDown = (e) => {
+    drawing = true;
+    current.x = e.clientX || e.touches[0].clientX;
+    current.y = e.clientY || e.touches[0].clientY;
+  };
+
+  const onMouseMove = (e) => {
+    if (!drawing) { return; }
+    drawLine(context, current.x, current.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, current.color, true);
+    current.x = e.clientX || e.touches[0].clientX;
+    current.y = e.clientY || e.touches[0].clientY;
+  };
+
+  const onMouseUp = (e) => {
+    if (!drawing) { return; }
+    drawing = false;
+    drawLine(context,current.x, current.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, current.color, true);
+    localStorage.setItem("canvas-data", canvas.toDataURL())
+  };
+
+
+    canvas.addEventListener('mousedown', onMouseDown, false);
+    canvas.addEventListener('mouseup', onMouseUp, false);
+    canvas.addEventListener('mouseout', onMouseUp, false);
+    // canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
+    canvas.addEventListener('mousemove', onMouseMove, false);
+
+    // Touch support for mobile devices
+    canvas.addEventListener('touchstart',  onMouseDown, false);
+    canvas.addEventListener('touchend', onMouseUp, false);
+    canvas.addEventListener('touchcancel',onMouseUp, false);
+    // canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
+    canvas.addEventListener('touchmove', onMouseMove, false);
+
+
+    //--------------------socket ready---------------------------------------
+    // let socket = io.connect("http//localhost:8080");
+    // socket.on("drawing", (data) => {
+    //   let img = new Image()
+    //   img.onload = () => {
+    //     context.drawImage(img, 0, 0)
+    //   }
+    //   img.src = data;
+    // })
     // ----------------------- Colors --------------------------------------------------
 
     const colors = document.getElementsByClassName('color');
@@ -54,103 +89,61 @@ const Board = () => {
 
     let drawing = false;
 
-    // ------------------------------- create the drawing ----------------------------
-
-    // const drawLine = (x0, y0, x1, y1, color, emit) => {
-    //   context.beginPath();
-    //   context.moveTo(x0, y0);
-    //   context.lineTo(x1, y1);
-    //   context.strokeStyle = color;
-    //   context.lineWidth = 2;
-    //   context.stroke();
-    //   context.closePath();
-    //   // if (!emit) { return; }
-    //   // const w = canvas.width;
-    //   // const h = canvas.height;
-
-    //   // socketRef.current.emit('drawing', {
-    //   //   x0: x0 / w,
-    //   //   y0: y0 / h,
-    //   //   x1: x1 / w,
-    //   //   y1: y1 / h,
-    //   //   color,
-    //   // });
-    // };
-
-    // ---------------- mouse movement --------------------------------------
-
-    const onMouseDown = (e) => {
-      drawing = true;
-      current.x = e.clientX || e.touches[0].clientX;
-      current.y = e.clientY || e.touches[0].clientY;
-    };
-
-    const onMouseMove = (e) => {
-      if (!drawing) { return; }
-      drawLine(context,current.x, current.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, current.color, true);
-      current.x = e.clientX || e.touches[0].clientX;
-      current.y = e.clientY || e.touches[0].clientY;
-    };
-
-    const onMouseUp = (e) => {
-      if (!drawing) { return; }
-      drawing = false;
-      // drawCircle(canvas,context,current.x, current.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, current.color, true);
-    };
 
     //----------- limit the number of events per second -----------------------
 
-    const throttle = (callback, delay) => {
-      let previousCall = new Date().getTime();
-      return function() {
-        const time = new Date().getTime();
+    // const throttle = (callback, delay) => {
+    //   let previousCall = new Date().getTime();
+    //   return function() {
+    //     const time = new Date().getTime();
 
-        if ((time - previousCall) >= delay) {
-          previousCall = time;
-          callback.apply(null, arguments);
-        }
-      };
-    };
+    //     if ((time - previousCall) >= delay) {
+    //       previousCall = time;
+    //       callback.apply(null, arguments);
+    //     }
+    //   };
+    // };
 
-    // -----------------add event listeners to our canvas ----------------------
 
-    canvas.addEventListener('mousedown', onMouseDown, false);
-    canvas.addEventListener('mouseup', onMouseUp, false);
-    canvas.addEventListener('mouseout', onMouseUp,false);
-    // canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
-    canvas.addEventListener('mousemove',onMouseMove, false);
-   
-    // Touch support for mobile devices
-    canvas.addEventListener('touchstart', (e)=>onMouseDown(e,current,drawing), false);
-    canvas.addEventListener('touchend', (e)=>onMouseUp(e,current,drawing,drawLine), false);
-    canvas.addEventListener('touchcancel', (e)=>onMouseUp(e,current,drawing,drawLine), false);
-    // canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
-  canvas.addEventListener('touchmove', (e)=>onMouseMove(e,current,drawing,drawLine), false);
+
     // -------------- make the canvas fill its parent component -----------------
 
     const onResize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+       var dataURL = localStorage.getItem("canvas-data");
+      var img = new Image;
+      img.src = dataURL;
+      img.onload = function() {
+        context.drawImage(img, 0, 0);
+      };
     };
 
     window.addEventListener('resize', onResize, false);
     onResize();
 
     // ----------------------- socket.io connection ----------------------------
-    const onDrawingEvent = (data) => {
-      console.log("data:",data)
-      const w = canvas.width;
-      const h = canvas.height;
-      drawLine(context,data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
-      let dt = canvas.toDataUrl("image/png")
-      socket.emit("drawing",dt);
-    }
+    // const onDrawingEvent = (data) => {
+    //   console.log("data:", data)
+    //   const w = canvas.width;
+    //   const h = canvas.height;
+    //   drawLine(context, data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
+    //   let dt = canvas.toDataUrl("image/png")
+    //   socket.emit("drawing", dt);
+    // }
 
     // socketRef.current = io.connect('/');
     // socketRef.current.on('drawing', onDrawingEvent);
-    
-    console.log("ref:",canvasRef)
 
+
+    // -----------------Saving in localstorage--------------------------------
+    console.log("ref:", canvasRef)
+    var dataURL = localStorage.getItem("canvas-data");
+    var img = new Image;
+    img.src = dataURL;
+    img.onload = function() {
+      context.drawImage(img, 0, 0);
+    };
   }, []);
 
   // ------------- The Canvas and color elements --------------------------
@@ -158,13 +151,7 @@ const Board = () => {
   return (
     <div>
       <canvas ref={canvasRef} className="whiteboard" />
-      <div ref={colorsRef} className="colors">
-        <div className="color black" />
-        <div className="color red" />
-        <div className="color green" />
-        <div className="color blue" />
-        <div className="color yellow" />
-      </div>
+      <Tools ref={colorsRef}/>
     </div>
   );
 };
