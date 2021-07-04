@@ -2,6 +2,7 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
+  
 }
 #toolBar{
   display:flex;
@@ -13,6 +14,7 @@
   left:50%;
   top:10px;
   transform: translate(-50%,0);
+  
 }
 
 .tool{
@@ -32,11 +34,11 @@
 
 /*   For color Picker */
 
-.tool:nth-child(3){
+.tool:nth-child(10){
   position:relative;
 }
 
-.tool:nth-child(3) label input,.tool:nth-child(3) label i{
+.tool:nth-child(10) label input,.tool:nth-child(10) label i{
 /*   color:red; */
   width:30px;
   height:30px;
@@ -47,8 +49,8 @@
   cursor:pointer;
 }
 
-.tool:nth-child(all) label input{
-  z-index:-1;
+.tool:nth-child(10) label input{
+  z-index:-100;
   opacity:0;
 }
 

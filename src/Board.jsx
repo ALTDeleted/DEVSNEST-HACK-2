@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { drawLine, drawCircle } from "./DrawShapes";
 import Tools from "./Tools"
-
+import Footer from "./Footer"
 
 import io from 'socket.io-client';
 import './Board.css';
@@ -11,6 +11,8 @@ const Board = () => {
   const canvasRef = useRef(null);
   const toolRef = useRef(null);
   const socketRef = useRef();
+  let restore_array=[]
+  let index=-1;
   let drawing = false;
   let draw=drawLine;
   
@@ -38,7 +40,24 @@ const Board = () => {
     const canvas = canvasRef.current;
     const tools = toolRef.current;
     const context = canvas.getContext('2d');
+    //----------------------active icons---------------------
+        let currentActive = document.querySelector(".control")
+    let selected = document.querySelectorAll(".control")
 
+    selected.forEach(select => {
+        select.addEventListener('click',() => {
+            currentActive = select;
+            selected.forEach(select2 => {
+          if(select2!=currentActive || select2.classList.contains('active')
+          ){
+            select2.classList.remove('active')
+          }
+          else{
+            select2.classList.add('active')
+          }
+        })
+    })
+    })
     // -----------------add event listeners to our canvas ----------------------
 
     const onMouseDown = (e) => {
@@ -59,6 +78,8 @@ const Board = () => {
       if (!drawing) { return; }
       drawing = false;
       draw(canvas,context, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
+      restore_array.push(context.getImageData(0,0, canvas.width, canvas.height));
+      index+=1;
       saveToLocal();
     };
 
@@ -86,9 +107,8 @@ const Board = () => {
 
     window.addEventListener('resize', onResize, false);
     onResize()
+    
   },[])
-
-
 
 
   useEffect(() => {
@@ -98,7 +118,20 @@ const Board = () => {
     const tools = toolRef.current;
     const context = canvas.getContext('2d');
 
+     
+     const undoButton=document.querySelector('.button');
 
+     undoButton.addEventListener('click', undo)
+    //-------------------------undo-------------------------------
+    function undo(){
+      if(index>=0)
+      {
+        index-=1;
+        restore_array.pop();
+        context.putImageData(restore_array[index], 0, 0)
+      }
+    }
+    
     //--------------------socket ready---------------------------------------
     // let socket = io.connect("http//localhost:8080");
     // socket.on("drawing", (data) => {
@@ -108,7 +141,7 @@ const Board = () => {
     //   }
     //   img.src = data;
     // })
-    // ----------------------- Colors --------------------------------------------------
+    // ----------------------- Colors -----------------------------------------
 
     const colors = document.getElementsByClassName('color');
 
@@ -128,6 +161,7 @@ const Board = () => {
     const deleteData = document.querySelector(".delete")
       deleteData.addEventListener('click', (e)=>{
         context.clearRect(0, 0, canvas.width, canvas.height)
+        restore_array=[];
         localStorage.clear();
       }
       , false);
@@ -136,6 +170,7 @@ const Board = () => {
     const clearData = document.querySelector(".clear")
     clearData.addEventListener('click', (e)=>{
       context.clearRect(0, 0, canvas.width, canvas.height)
+      restore_array=[];
     })
 
        
@@ -167,6 +202,11 @@ const Board = () => {
       console.log(colorPicker)
 
     },false)
+
+
+//     ("#save-canvas").addEventListener("click",function(){
+//   saveCanvas(canvas, "sketch", "png");
+// });
 
     //----------- limit the number of events per second -----------------------
 
@@ -211,6 +251,7 @@ const Board = () => {
     <div>
       <canvas ref={canvasRef} className="whiteboard" />
       <Tools ref={toolRef}/>
+      <Footer/>
     </div>
   );
 };
