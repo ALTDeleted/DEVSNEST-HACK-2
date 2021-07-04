@@ -10,37 +10,56 @@ import './Board.css';
 const Board = () => {
 
   const canvasRef = useRef(null);
-  const colorsRef = useRef(null);
+  const toolRef = useRef(null);
   const socketRef = useRef();
+  let drawing = false;
+  
+  function saveToLocal(){
+      localStorage.setItem("canvas-data", canvasRef.current.toDataURL())
+  }
 
-  useEffect(() => {
-    // --------------- getContext() method returns a drawing context on the canvas-----
+  function loadFromLocal(){
+     let dataURL = localStorage.getItem("canvas-data");
+        let img = new Image;
+        img.src = dataURL;
+        img.onload = function() {
+          canvasRef.current.getContext('2d').drawImage(img, 0, 0);
+        };
+  }
+
+  // set the currentColor color
+  const currentColor = {
+    color: 'black',
+  };
+
+
+  useEffect(()=>{
 
     const canvas = canvasRef.current;
-    const test = colorsRef.current;
+    const tools = toolRef.current;
     const context = canvas.getContext('2d');
 
     // -----------------add event listeners to our canvas ----------------------
 
-  const onMouseDown = (e) => {
-    drawing = true;
-    current.x = e.clientX || e.touches[0].clientX;
-    current.y = e.clientY || e.touches[0].clientY;
-  };
+    const onMouseDown = (e) => {
+      drawing = true;
+      currentColor.x = e.clientX || e.touches[0].clientX;
+      currentColor.y = e.clientY || e.touches[0].clientY;
+    };
 
-  const onMouseMove = (e) => {
-    if (!drawing) { return; }
-    drawLine(context, current.x, current.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, current.color, true);
-    current.x = e.clientX || e.touches[0].clientX;
-    current.y = e.clientY || e.touches[0].clientY;
-  };
+    const onMouseMove = (e) => {
+      if (!drawing) { return; }
+      drawLine(context, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
+      currentColor.x = e.clientX || e.touches[0].clientX;
+      currentColor.y = e.clientY || e.touches[0].clientY;
+    };
 
-  const onMouseUp = (e) => {
-    if (!drawing) { return; }
-    drawing = false;
-    drawLine(context,current.x, current.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, current.color, true);
-    localStorage.setItem("canvas-data", canvas.toDataURL())
-  };
+    const onMouseUp = (e) => {
+      if (!drawing) { return; }
+      drawing = false;
+      drawLine(context,currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
+      saveToLocal();
+    };
 
 
     canvas.addEventListener('mousedown', onMouseDown, false);
@@ -56,6 +75,28 @@ const Board = () => {
     // canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
     canvas.addEventListener('touchmove', onMouseMove, false);
 
+    // -------------- make the canvas fill its parent component -----------------
+
+    const onResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      loadFromLocal();
+    };
+
+    window.addEventListener('resize', onResize, false);
+    onResize()
+  },[])
+
+
+
+
+  useEffect(() => {
+    // --------------- getContext() method returns a drawing context on the canvas-----
+
+    const canvas = canvasRef.current;
+    const tools = toolRef.current;
+    const context = canvas.getContext('2d');
+
 
     //--------------------socket ready---------------------------------------
     // let socket = io.connect("http//localhost:8080");
@@ -69,16 +110,11 @@ const Board = () => {
     // ----------------------- Colors --------------------------------------------------
 
     const colors = document.getElementsByClassName('color');
-    console.log(colors, 'the colors');
-    console.log(test);
-    // set the current color
-    const current = {
-      color: 'black',
-    };
 
-    // helper that will update the current color
+
+    // helper that will update the currentColor color
     const onColorUpdate = (e) => {
-      current.color = e.target.className.split(' ')[1];
+      currentColor.color = e.target.className.split(' ')[1];
     };
 
     // loop through the color elements and add the click event listeners
@@ -86,8 +122,12 @@ const Board = () => {
       colors[i].addEventListener('click', onColorUpdate, false);
     }
 
+    const clrscr = document.querySelector(".clear")
+      clrscr.addEventListener('click', (e)=>{
+      context.clearRect(0, 0, canvas.width, canvas.height)
+      }
+      , false);
 
-    let drawing = false;
 
 
     //----------- limit the number of events per second -----------------------
@@ -106,22 +146,6 @@ const Board = () => {
 
 
 
-    // -------------- make the canvas fill its parent component -----------------
-
-    const onResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-       var dataURL = localStorage.getItem("canvas-data");
-      var img = new Image;
-      img.src = dataURL;
-      img.onload = function() {
-        context.drawImage(img, 0, 0);
-      };
-    };
-
-    window.addEventListener('resize', onResize, false);
-    onResize();
-
     // ----------------------- socket.io connection ----------------------------
     // const onDrawingEvent = (data) => {
     //   console.log("data:", data)
@@ -132,18 +156,14 @@ const Board = () => {
     //   socket.emit("drawing", dt);
     // }
 
-    // socketRef.current = io.connect('/');
-    // socketRef.current.on('drawing', onDrawingEvent);
+    // socketRef.currentColor = io.connect('/');
+    // socketRef.currentColor.on('drawing', onDrawingEvent);
 
 
     // -----------------Saving in localstorage--------------------------------
     console.log("ref:", canvasRef)
-    var dataURL = localStorage.getItem("canvas-data");
-    var img = new Image;
-    img.src = dataURL;
-    img.onload = function() {
-      context.drawImage(img, 0, 0);
-    };
+
+    loadFromLocal();
   }, []);
 
   // ------------- The Canvas and color elements --------------------------
@@ -151,7 +171,7 @@ const Board = () => {
   return (
     <div>
       <canvas ref={canvasRef} className="whiteboard" />
-      <Tools ref={colorsRef}/>
+      <Tools ref={toolRef}/>
     </div>
   );
 };
