@@ -22,7 +22,9 @@
   width: 48px;
 }
 
-
+.active{
+  color: #fff;
+}
 
 .color.black { background-color: black; }
 .color.red { background-color: red; }

@@ -137,7 +137,8 @@ const Board = () => {
     clearData.addEventListener('click', (e)=>{
       context.clearRect(0, 0, canvas.width, canvas.height)
     })
-    
+
+       
     //circle event listener
     const circleTool = document.querySelector(".circle")
     circleTool.addEventListener('click', (e)=>{
@@ -150,6 +151,15 @@ const Board = () => {
       draw=drawLine;
     }, false);
 
+    //eraser event listener
+    const eraser = document.querySelector(".eraser")
+    eraser.addEventListener('click', (e)=>{
+      currentColor.color="white";
+      draw=drawLine;
+    },false);
+    
+    
+
     const colorPicker = document.querySelector("#colorPicker")
     console.log(colorPicker)
     colorPicker.addEventListener('change',(e)=> {
@@ -157,8 +167,6 @@ const Board = () => {
       console.log(colorPicker)
 
     },false)
-
-    const tools = document.querySelectorAll('tool');
 
     //----------- limit the number of events per second -----------------------
 
