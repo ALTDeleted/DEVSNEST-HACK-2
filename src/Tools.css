@@ -1,0 +1,73 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+#toolBar{
+  display:flex;
+  background:#1f1f1f;
+  width:600px;
+  height:50px;
+  border-radius:5px;
+  position: absolute;
+  left:50%;
+  top:10px;
+  transform: translate(-50%,0);
+}
+.tool{
+  color:grey;
+  cursor:pointer;
+  font-size:30px;
+  line-height:40px;
+  text-align:center;
+  margin:auto;
+  height:50px;
+  width:50px;
+}
+
+.tool:hover{
+  color:white;
+}
+
+.tool:{
+  color:rgb(94, 255, 0);
+}
+
+/*   For color Picker */
+
+.tool:nth-child(3){
+  position:relative;
+}
+
+.tool:nth-child(3) label input,.tool:nth-child(3) label i{
+/*   color:red; */
+  width:30px;
+  height:30px;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  cursor:pointer;
+}
+
+.tool:nth-child(all) label input{
+  z-index:-1;
+  opacity:0;
+}
+
+
+/* UNDO REDO */
+#undo-redo{
+  display:flex;
+  background:black;
+  justify-content:center;
+  position:absolute;
+  width:90%;
+}
+#undo-redo .tool{
+  width:40px;
+  height:40px;
+  margin:0; 
+/*   for smooth active and remove */
+  transition:all 0.5s;
+}

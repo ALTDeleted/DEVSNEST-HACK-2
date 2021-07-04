@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { drawLine, drawCircle } from "./MouseEvents/DrawLine";
+import { drawLine, drawCircle } from "./DrawShapes";
 import Tools from "./Tools"
 
 
@@ -8,11 +8,11 @@ import './Board.css';
 
 
 const Board = () => {
-
   const canvasRef = useRef(null);
   const toolRef = useRef(null);
   const socketRef = useRef();
   let drawing = false;
+  let draw=drawLine;
   
   function saveToLocal(){
       localStorage.setItem("canvas-data", canvasRef.current.toDataURL())
@@ -49,15 +49,16 @@ const Board = () => {
 
     const onMouseMove = (e) => {
       if (!drawing) { return; }
-      drawLine(context, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
-      currentColor.x = e.clientX || e.touches[0].clientX;
-      currentColor.y = e.clientY || e.touches[0].clientY;
+       draw(canvas,context, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY,  currentColor.color, true);
+        if(draw==drawLine){currentColor.x = e.clientX || e.touches[0].clientX;
+        currentColor.y = e.clientY || e.touches[0].clientY;
+      }
     };
 
     const onMouseUp = (e) => {
       if (!drawing) { return; }
       drawing = false;
-      drawLine(context,currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
+      draw(canvas,context, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
       saveToLocal();
     };
 
@@ -115,20 +116,48 @@ const Board = () => {
     // helper that will update the currentColor color
     const onColorUpdate = (e) => {
       currentColor.color = e.target.className.split(' ')[1];
+
     };
 
     // loop through the color elements and add the click event listeners
     for (let i = 0; i < colors.length; i++) {
       colors[i].addEventListener('click', onColorUpdate, false);
     }
-
-    const clrscr = document.querySelector(".clear")
-      clrscr.addEventListener('click', (e)=>{
-      context.clearRect(0, 0, canvas.width, canvas.height)
+    
+    //delete screen event listener
+    const deleteData = document.querySelector(".delete")
+      deleteData.addEventListener('click', (e)=>{
+        context.clearRect(0, 0, canvas.width, canvas.height)
+        localStorage.clear();
       }
       , false);
 
+    //clear screen event listener
+    const clearData = document.querySelector(".clear")
+    clearData.addEventListener('click', (e)=>{
+      context.clearRect(0, 0, canvas.width, canvas.height)
+    })
+    
+    //circle event listener
+    const circleTool = document.querySelector(".circle")
+    circleTool.addEventListener('click', (e)=>{
+      draw=drawCircle;
+      }, false);
+      
+    //pencil event listener
+    const pencilTool = document.querySelector(".pencil")
+    pencilTool.addEventListener('click', (e)=>{
+      pencilTool.cl
+      draw=drawLine;
+    }, false);
 
+    const colorPicker = document.querySelector("#colorPicker")
+    console.log(colorPicker)
+    colorPicker.addEventListener('change',(e)=> {
+      currentColor.color = colorPicker.value;
+      console.log(colorPicker)
+
+    },false)
 
     //----------- limit the number of events per second -----------------------
 
@@ -161,6 +190,7 @@ const Board = () => {
 
 
     // -----------------Saving in localstorage--------------------------------
+    
     console.log("ref:", canvasRef)
 
     loadFromLocal();
