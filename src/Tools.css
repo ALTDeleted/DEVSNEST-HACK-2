@@ -105,4 +105,7 @@ label > img{
         flex-direction: column;
         left:10%;
     }
+    .control{
+        margin-top:5px;
+    }
 }

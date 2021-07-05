@@ -21,8 +21,7 @@ const Board = () => {
 
   function saveToLocal() {
     localStorage.setItem("canvas-data", canvasRef.current.toDataURL());
-    restore_array.push(context.getImageData(0, 0, canvas.width, canvas.height));
-    index += 1;
+   
   }
 
   function loadFromLocal() {
@@ -106,7 +105,8 @@ const Board = () => {
       if (!drawing) { return; }
       drawing = false;
       draw(canvas, context, currentColor.stroke, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
-      
+       restore_array.push(context.getImageData(0, 0, canvas.width, canvas.height));
+    index += 1;
       saveToLocal();
     };
 
