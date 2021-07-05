@@ -45,6 +45,7 @@ const Board = () => {
 
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
+
     //----------------------active icons---------------------
     let currentActive = document.querySelector(".control")
     let selected = document.querySelectorAll(".control")
@@ -82,6 +83,7 @@ const Board = () => {
         })
       })
     })
+    
     // -----------------add event listeners to our canvas ----------------------
 
     const onMouseDown = (e) => {
