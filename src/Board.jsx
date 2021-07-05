@@ -324,7 +324,7 @@ const Board = () => {
       <button className="undo" title="Undo"><img src={undo} /></button>
       <button className="redo" title="Redo"><img src={redo} /></button>
       <div className="brushSizeControl" title="To Control size of brush or Eraser">
-        <input type="range" defaultValue="20" min="2" max="100" />
+        <input type="range" id="cursorSize" defaultValue="20" min="2" max="100" />
       </div>
       <button className="save" title="Save"><img src={save}/></button>
     </div>
