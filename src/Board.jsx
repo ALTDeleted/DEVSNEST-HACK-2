@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { drawLine, drawCircle, drawReactangle } from "./DrawShapes";
+import { drawLine, drawCircle, drawRectangle } from "./DrawShapes";
 import Tools from "./Tools"
 import redo from "./Assets/redo.png"
 import save from "./Assets/diskette.png"
@@ -20,7 +20,9 @@ const Board = () => {
 
 
   function saveToLocal() {
-    localStorage.setItem("canvas-data", canvasRef.current.toDataURL())
+    localStorage.setItem("canvas-data", canvasRef.current.toDataURL());
+    restore_array.push(context.getImageData(0, 0, canvas.width, canvas.height));
+    index += 1;
   }
 
   function loadFromLocal() {
@@ -104,8 +106,7 @@ const Board = () => {
       if (!drawing) { return; }
       drawing = false;
       draw(canvas, context, currentColor.stroke, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
-      restore_array.push(context.getImageData(0, 0, canvas.width, canvas.height));
-      index += 1;
+      
       saveToLocal();
     };
 
@@ -127,7 +128,7 @@ const Board = () => {
 
     const cross = document.querySelector(".crosshair");
     document.addEventListener("mousemove", (e) => {
-      cross.style.transform = `translate(${e.clientX}px,${e.clientY}px)`
+      cross.style.transform = `translate(${e.clientX-10}px,${e.clientY-10}px)`
       cross.style.width = currentColor.stroke + "px";
       cross.style.height = `${currentColor.stroke}px`;
     })
@@ -214,24 +215,29 @@ const Board = () => {
       draw = drawLine;
     }, false);
 
-    //undo 
+    //square event listener
+    const rectTool = document.querySelector(".rectangle")
+    rectTool.addEventListener('click', (e) => {
+      draw = drawRectangle;
+    }, false);
+
+    //un
     const undoButton = document.querySelector(".undo")
     undoButton.addEventListener('click', (e) => {
-      if (index >= 0) {
-        index -= 4;
-        if (restore_array.length > 3) {
-          context.putImageData(restore_array[index], 0, 0)
+      if(index >= 0) {
+        if (restore_array.length > 0) {
+          context.putImageData(restore_array[index], 0, 0);
+          index-=1;
         }
-        else {
-          return;
-        }
+      if(index < 0)
+          index = 0;
       }
     })
 
     const redoButton = document.querySelector(".redo")
     redoButton.addEventListener('click', (e) => {
       if (index < restore_array.length - 1) {
-        index += 4
+        index += 1
         context.putImageData(restore_array[index], 0, 0)
       }
     })
@@ -255,7 +261,6 @@ const Board = () => {
     // console.log(colorPicker)
     colorPicker.addEventListener('change', (e) => {
       currentColor.color = colorPicker.value;
-
     }, false)
 
     //-------- for stroke brushSizeControl
@@ -316,12 +321,12 @@ const Board = () => {
     <Tools ref={toolRef} />
     <div className="crosshair"></div>
     <div id="footer">
-      <button className="undo"><img src={undo} /></button>
-      <button className="redo"><img src={redo} /></button>
-      <div className="brushSizeControl">
+      <button className="undo" title="Undo"><img src={undo} /></button>
+      <button className="redo" title="Redo"><img src={redo} /></button>
+      <div className="brushSizeControl" title="To Control size of brush or Eraser">
         <input type="range" defaultValue="20" min="2" max="100" />
       </div>
-      <button className="save"><img src={save} /></button>
+      <button className="save" title="Save"><img src={save}/></button>
     </div>
   </>
   );

@@ -6,10 +6,11 @@
 }
 #toolBar{
   display:flex;
+  /* flex-wrap: wrap; */
   padding: 10px 20px 5px 20px;
-  background:rgb(245, 245, 245);
-  width:600px;
-  height:60px;
+  background:rgb(0, 0, 0,0.2);
+  /* width:600px; */
+  /* height:60px; */
   border-radius:10px;
   position: absolute;
   left:50%;
@@ -97,4 +98,11 @@ label > img{
   margin:0; 
 /*   for smooth active and remove */
   transition:all 0.5s;
+}
+
+@media(max-width: 630px){
+    #toolBar{
+        flex-direction: column;
+        left:10%;
+    }
 }

@@ -4,9 +4,12 @@ import del from "./Assets/delete-user.png"
 import erase from "./Assets/eraser.png"
 import brush from "./Assets/paint-brush.png"
 import pallete from "./Assets/paint-palette.png"
-
-
+import circle from "./Assets/circle.png"
+import rectangle from "./Assets/rectangle.png"
 import "./Tools.css"
+
+// to remove uncessary label
+// document.querySelector(".colorpick-eyedropper-input-trigger").remove()
 
 
 function Tools() {
@@ -41,12 +44,11 @@ function Tools() {
           <input type="color" id="colorPicker" />
         </label>
       </div>
-
       <div className="tool control" title="Circle">
-        <img className="far fa-circle circle" aria-hidden="true"></img>
+        <img src={circle} className="circle" aria-hidden="true"></img>
       </div>
-       <div className="tool control" title="Circle">
-        <img className="far fa-circle circle" aria-hidden="true"></img>
+       <div className="tool control" title="Rectangle">
+        <img src={rectangle} className="rectangle" aria-hidden="true"></img>
       </div>
     </div>
   </>
