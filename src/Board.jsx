@@ -19,6 +19,7 @@ const Board = () => {
 
 
 
+
   function saveToLocal() {
     localStorage.setItem("canvas-data", canvasRef.current.toDataURL());
   }
@@ -223,12 +224,13 @@ const Board = () => {
     const undoButton = document.querySelector(".undo")
     undoButton.addEventListener('click', (e) => {
       if(index >= 0) {
+        console.log(index);
         if (restore_array.length > 0) {
           context.putImageData(restore_array[index], 0, 0);
           index-=1;
         }
-      if(index < 0)
-          index = 0;
+      if(index <= 0)
+          context.clearRect(0, 0, canvas.width, canvas.height);
       }
     })
 
