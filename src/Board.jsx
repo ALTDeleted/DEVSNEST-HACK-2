@@ -38,6 +38,7 @@ const Board = () => {
   const currentColor = {
     color: 'black',
     stroke: '20',
+    palleteColor:'black'
   };
 
 
@@ -83,7 +84,7 @@ const Board = () => {
         })
       })
     })
-    
+
     // -----------------add event listeners to our canvas ----------------------
 
     const onMouseDown = (e) => {
@@ -205,7 +206,7 @@ const Board = () => {
     //pencil event listener
     const pencilTool = document.querySelector(".pencil")
     pencilTool.addEventListener('click', (e) => {
-      currentColor.color = "black";
+      currentColor.color = currentColor.palleteColor;
       draw = drawLine;
     }, false);
 
@@ -263,6 +264,7 @@ const Board = () => {
     // console.log(colorPicker)
     colorPicker.addEventListener('change', (e) => {
       currentColor.color = colorPicker.value;
+      currentColor.palleteColor = colorPicker.value;
     }, false)
 
     //-------- for stroke brushSizeControl
@@ -270,7 +272,6 @@ const Board = () => {
     const input = document.querySelector(".brushSizeControl input")
     input.addEventListener('change', () => {
       currentColor.stroke = input.value;
-      //   alert(currentColor.stroke)
     })
 
 
