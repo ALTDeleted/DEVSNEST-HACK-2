@@ -6,20 +6,20 @@
 }
 #toolBar{
   display:flex;
-  background:#1f1f1f;
+  padding: 10px 20px 5px 20px;
+  background:rgb(245, 245, 245);
   width:600px;
-  height:50px;
-  border-radius:5px;
+  height:60px;
+  border-radius:10px;
   position: absolute;
   left:50%;
   top:10px;
   transform: translate(-50%,0);
-  
+  box-shadow:  10px 10px 20px #e2e2e2;
 }
 
 .tool{
-  color:grey;
-  cursor:pointer;
+cursor:pointer !important;
   font-size:30px;
   line-height:40px;
   text-align:center;
@@ -28,14 +28,41 @@
   width:50px;
 }
 
+.control{
+      -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
+img{
+  height:40px;
+  width:40px;
+  object-fit: cover;
+}
+label > img{
+  margin-top:20px;
+}
 .tool:hover{
-  color:white;
+  color:rebeccapurple;
+  -webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(0%);
+  transform: scale(1.2);
 }
 
+.tool:nth-child(9){
+    font-size: 35px;
+}
+
+.color{
+    border-radius: 50%;
+    margin:4px;
+    width: 30px !important;
+    height:30px !important;
+}
 /*   For color Picker */
 
 .tool:nth-child(10){
   position:relative;
+  font-size:28px;
+  top:-19px;
 }
 
 .tool:nth-child(10) label input,.tool:nth-child(10) label i{
@@ -63,6 +90,7 @@
   position:absolute;
   width:90%;
 }
+
 #undo-redo .tool{
   width:40px;
   height:40px;

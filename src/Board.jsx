@@ -1,62 +1,88 @@
 import React, { useRef, useEffect } from 'react';
 import { drawLine, drawCircle } from "./DrawShapes";
 import Tools from "./Tools"
-import Footer from "./Footer"
-
-import io from 'socket.io-client';
+import redo from "./Assets/redo.png"
+import save from "./Assets/diskette.png"
+import undo from "./Assets/undo.png"
+// import io from 'socket.io-client';
 import './Board.css';
 
 
 const Board = () => {
   const canvasRef = useRef(null);
   const toolRef = useRef(null);
-  const socketRef = useRef();
-  let restore_array=[]
-  let index=-1;
+  // const socketRef = useRef();
+  let restore_array = [];
+  let index = -1;
   let drawing = false;
-  let draw=drawLine;
-  
-  function saveToLocal(){
-      localStorage.setItem("canvas-data", canvasRef.current.toDataURL())
+  let draw = drawLine;
+
+
+
+  function saveToLocal() {
+    localStorage.setItem("canvas-data", canvasRef.current.toDataURL())
   }
 
-  function loadFromLocal(){
-     let dataURL = localStorage.getItem("canvas-data");
-        let img = new Image;
-        img.src = dataURL;
-        img.onload = function() {
-          canvasRef.current.getContext('2d').drawImage(img, 0, 0);
-        };
+  function loadFromLocal() {
+    let dataURL = localStorage.getItem("canvas-data");
+    let img = new Image;
+    img.src = dataURL;
+    img.onload = function() {
+      canvasRef.current.getContext('2d').drawImage(img, 0, 0);
+    };
   }
+
+
 
   // set the currentColor color
   const currentColor = {
     color: 'black',
+    stroke: '20',
   };
 
 
-  useEffect(()=>{
+  useEffect(() => {
 
     const canvas = canvasRef.current;
     const tools = toolRef.current;
+
     const context = canvas.getContext('2d');
     //----------------------active icons---------------------
-        let currentActive = document.querySelector(".control")
+    let currentActive = document.querySelector(".control")
     let selected = document.querySelectorAll(".control")
 
+
     selected.forEach(select => {
-        select.addEventListener('click',() => {
-            currentActive = select;
-            selected.forEach(select2 => {
-          if(select2!=currentActive || select2.classList.contains('active')
-          ){
+      select.addEventListener('click', () => {
+        if (select.classList.contains('active')) {
+          return;
+        }
+
+        currentActive = select;
+        selected.forEach(select2 => {
+          if (select2 != currentActive || select2.classList.contains('active')) {
             select2.classList.remove('active')
           }
-          else{
-            select2.classList.add('active')
+          else {
+            if (select2.classList.contains('toToggle')) {
+              setTimeout(function() {
+                currentActive = document.querySelector('.control')
+                selected.forEach(select12 => {
+                  if (select12 != currentActive || select12.classList.contains('active')
+                  ) {
+                    select12.classList.remove('active')
+                  }
+                })
+                currentActive.classList.add('active')
+              }, 1500);
+
+            }
+            else {
+              select2.classList.add('active')
+            }
           }
         })
-    })
+      })
     })
     // -----------------add event listeners to our canvas ----------------------
 
@@ -68,18 +94,19 @@ const Board = () => {
 
     const onMouseMove = (e) => {
       if (!drawing) { return; }
-       draw(canvas,context, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY,  currentColor.color, true);
-        if(draw==drawLine){currentColor.x = e.clientX || e.touches[0].clientX;
+      draw(canvas, context,currentColor.stroke, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
+      if (draw == drawLine) {
+        currentColor.x = e.clientX || e.touches[0].clientX;
         currentColor.y = e.clientY || e.touches[0].clientY;
       }
     };
 
     const onMouseUp = (e) => {
-      if (!drawing) { return; }
+      // restore_array!drawing) { return; }
       drawing = false;
-      draw(canvas,context, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
-      restore_array.push(context.getImageData(0,0, canvas.width, canvas.height));
-      index+=1;
+      draw(canvas, context,currentColor.stroke, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
+      restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
+  index+=1;
       saveToLocal();
     };
 
@@ -91,12 +118,22 @@ const Board = () => {
     canvas.addEventListener('mousemove', onMouseMove, false);
 
     // Touch support for mobile devices
-    canvas.addEventListener('touchstart',  onMouseDown, false);
+    canvas.addEventListener('touchstart', onMouseDown, false);
     canvas.addEventListener('touchend', onMouseUp, false);
-    canvas.addEventListener('touchcancel',onMouseUp, false);
+    canvas.addEventListener('touchcancel', onMouseUp, false);
     // canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
     canvas.addEventListener('touchmove', onMouseMove, false);
 
+    //------------crosshair--------------------
+
+    const cross = document.querySelector(".crosshair");
+    document.addEventListener("mousemove",(e)=>{
+      cross.style.transform = `translate(${e.clientX}px,${e.clientY}px)`
+      cross.stroke.width = currentColor.stroke;
+      cross.stroke.height = currentColor.stroke;
+
+    })
+    
     // -------------- make the canvas fill its parent component -----------------
 
     const onResize = () => {
@@ -107,8 +144,8 @@ const Board = () => {
 
     window.addEventListener('resize', onResize, false);
     onResize()
-    
-  },[])
+
+  }, [])
 
 
   useEffect(() => {
@@ -118,20 +155,6 @@ const Board = () => {
     const tools = toolRef.current;
     const context = canvas.getContext('2d');
 
-     
-     const undoButton=document.querySelector('.button');
-
-     undoButton.addEventListener('click', undo)
-    //-------------------------undo-------------------------------
-    function undo(){
-      if(index>=0)
-      {
-        index-=1;
-        restore_array.pop();
-        context.putImageData(restore_array[index], 0, 0)
-      }
-    }
-    
     //--------------------socket ready---------------------------------------
     // let socket = io.connect("http//localhost:8080");
     // socket.on("drawing", (data) => {
@@ -139,10 +162,9 @@ const Board = () => {
     //   img.onload = () => {
     //     context.drawImage(img, 0, 0)
     //   }
-    //   img.src = data;
+    //    img.src = data;
     // })
     // ----------------------- Colors -----------------------------------------
-
     const colors = document.getElementsByClassName('color');
 
 
@@ -156,57 +178,99 @@ const Board = () => {
     for (let i = 0; i < colors.length; i++) {
       colors[i].addEventListener('click', onColorUpdate, false);
     }
-    
+
     //delete screen event listener
     const deleteData = document.querySelector(".delete")
-      deleteData.addEventListener('click', (e)=>{
-        context.clearRect(0, 0, canvas.width, canvas.height)
-        restore_array=[];
-        localStorage.clear();
-      }
+    deleteData.addEventListener('click', (e) => {
+      context.clearRect(0, 0, canvas.width, canvas.height)
+      restore_array = [];
+      localStorage.clear();
+    }
       , false);
 
     //clear screen event listener
     const clearData = document.querySelector(".clear")
-    clearData.addEventListener('click', (e)=>{
+    clearData.addEventListener('click', (e) => {
       context.clearRect(0, 0, canvas.width, canvas.height)
-      restore_array=[];
+      restore_array = [];
     })
 
-       
+
     //circle event listener
     const circleTool = document.querySelector(".circle")
-    circleTool.addEventListener('click', (e)=>{
-      draw=drawCircle;
-      }, false);
-      
+    circleTool.addEventListener('click', (e) => {
+      draw = drawCircle;
+    }, false);
+
     //pencil event listener
     const pencilTool = document.querySelector(".pencil")
-    pencilTool.addEventListener('click', (e)=>{
-      draw=drawLine;
+    pencilTool.addEventListener('click', (e) => {
+      currentColor.color = "black";
+      draw = drawLine;
     }, false);
 
     //eraser event listener
     const eraser = document.querySelector(".eraser")
-    eraser.addEventListener('click', (e)=>{
-      currentColor.color="white";
-      draw=drawLine;
-    },false);
-    
-    
+    eraser.addEventListener('click', (e) => {
+      currentColor.color = "white";
+      draw = drawLine;
+    }, false);
+    //undo 
+    const undoButton = document.querySelector(".undo")
+    undoButton.addEventListener('click', (e) => {
+      if(index>=0)
+      {
+        index-=4;
+        // restore_array.pop();
+        // restore_array.pop();
+        // restore_array.pop();
+        // restore_array.pop();
+        
+        context.putImageData(restore_array[index],0,0)
+      }
+    })
+
+    const redoButton = document.querySelector(".redo")
+    redoButton.addEventListener('click', (e) =>{
+          if(index<restore_array.length-1){
+      index+=4
+      context.putImageData(restore_array[index],0,0)
+    }
+    })
+
+    const save = document.querySelector(".save");
+    save.addEventListener('click', (e) => {
+      // alert("saved")
+      // let img = new Image();
+      // img.src = canvas.toDataURL("image/png");
+      var link = document.createElement('a');
+      link.download = "whiteboard-TA-" + Date().split(" ")[2] + Date().split(" ")[1] + '.png';
+      link.href = document.getElementsByClassName("whiteboard")[0].toDataURL()
+      link.click();
+      // window.open("<img src='"+ img +"'/>")
+    })
+
+
+
 
     const colorPicker = document.querySelector("#colorPicker")
-    console.log(colorPicker)
-    colorPicker.addEventListener('change',(e)=> {
+    // console.log(colorPicker)
+    colorPicker.addEventListener('change', (e) => {
       currentColor.color = colorPicker.value;
-      console.log(colorPicker)
 
-    },false)
+    }, false)
+
+    //-------- for stroke brushSizeControl
+    const input = document.querySelector(".brushSizeControl input")
+    input.addEventListener('change', () => {
+      currentColor.stroke = input.value
+    //   alert(currentColor.stroke)
+    })
 
 
-//     ("#save-canvas").addEventListener("click",function(){
-//   saveCanvas(canvas, "sketch", "png");
-// });
+    //     ("#save-canvas").addEventListener("click",function(){
+    //   saveCanvas(canvas, "sketch", "png");
+    // });
 
     //----------- limit the number of events per second -----------------------
 
@@ -239,22 +303,33 @@ const Board = () => {
 
 
     // -----------------Saving in localstorage--------------------------------
-    
+
     console.log("ref:", canvasRef)
 
     loadFromLocal();
   }, []);
 
+
   // ------------- The Canvas and color elements --------------------------
 
-  return (
-    <div>
-      <canvas ref={canvasRef} className="whiteboard" />
-      <Tools ref={toolRef}/>
-      <Footer/>
+  return (<>
+    <link href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" rel="stylesheet" />
+    <canvas ref={canvasRef} className="whiteboard" />
+    <Tools ref={toolRef} />
+    <div className="crosshair"></div>
+    <div id="footer">
+      <button className="undo"><img src={undo}/></button>
+      <button className="redo"><img src={redo}/></button>
+      <div className="brushSizeControl">
+        <input type="range" defaultValue="20" min="2" max="100" />
+      </div>
+      <button className="save"><img src={save}/></button>
     </div>
+  </>
   );
 };
 
-export default Board;
+
+
+export default Board
 

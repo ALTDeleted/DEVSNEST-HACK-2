@@ -1,4 +1,11 @@
 import React, { useRef, useEffect } from 'react';
+import cancel from "./Assets/cancel.png"
+import del from "./Assets/delete-user.png"
+import erase from "./Assets/eraser.png"
+import brush from "./Assets/paint-brush.png"
+import pallete from "./Assets/paint-palette.png"
+
+
 import "./Tools.css"
 
 
@@ -16,21 +23,22 @@ function Tools() {
       <div className="color white tool" />
       
       <div className="tool active control" title="Pencil">
-        <i className="fas fa-pen pencil" aria-hidden="true"></i>
+        <img src={brush}  className="fas fa-pen pencil" aria-hidden="true"></img>
       </div>
       <div className="tool eraser control" title="Eraser">
-        <i class="fa fa-eraser" aria-hidden="true"></i>
+        <img src={erase} class="fa fa-eraser" aria-hidden="true"></img>
       </div>
 
-    <div className="tool delete control" title="Delete">
-        <i className="far fa-trash-alt " aria-hidden="true"></i>
+    <div className="tool delete control toToggle" title="Delete">
+        <img src={del} className="far fa-trash-alt " aria-hidden="true"></img>
     </div>
-      <div className="tool clear control" title="Clear">
-          <i class="fa fa-times" aria-hidden="true"></i>
+      <div className="tool clear control toToggle" title="Clear">
+          <img class="fa fa-times" 
+          src = {cancel}aria-hidden="true"></img>
       </div>
-      <div className="tool control" title="Pallete">
-        <label><i className="far fa-palette pallete" aria-hidden="true"></i>
-          <input type="color control" name="" id="colorPicker" />
+      <div className="tool control toToggle" title="Pallete">
+        <label><img src={pallete} className="far fa-palette pallete" aria-hidden="true"/>
+          <input type="color" id="colorPicker" />
         </label>
       </div>
 
@@ -43,8 +51,6 @@ function Tools() {
       <div className="tool control" title="Triangle">
         <i className="far fa-triangle triangle"  aria-hidden="true"></i>
       </div>
-      
-    
     </div>
   </>
   );

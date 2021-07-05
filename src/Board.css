@@ -23,12 +23,53 @@
 }
 
 .active{
-  color: #fff;
+  -webkit-filter: grayscale(0%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(0%);
+  color:white;
+  transform: scale(1.2);
 }
-
+.undo{
+  }
+.save{
+  }
 .color.black { background-color: black; }
 .color.red { background-color: red; }
 .color.green { background-color: green; }
 .color.blue { background-color: blue; }
 .color.yellow { background-color: yellow; }
 .color.white { background-color: white; }
+
+#footer{
+    width:100%;
+    height:10px;
+    /* background:lightgrey; */
+    display: flex;
+    justify-content: space-around;
+    position: absolute;
+    bottom:10%;
+    /* transform: translate(-20px,0px); */
+}
+#footer button{
+    border:none;
+    outline:none;
+    padding:10px;
+    width:60px;
+}
+
+#footer > img{
+  width: 20px;
+  height: 20px;
+}
+
+#footer button:hover{
+    background: #1f1f1f;
+    color:white;
+}
+
+.crosshair{
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  border: 1px solid black;
+  border-radius: 50%; 
+}
