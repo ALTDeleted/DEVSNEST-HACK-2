@@ -1,3 +1,4 @@
+import React, { useRef, useEffect } from 'react';
 import './App.css';
 import Board from './Board.jsx';
 
