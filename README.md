@@ -4,7 +4,7 @@ This project was made by Team Aditya for [Devsnest](https://devsnest.in) Hackath
 
 ## About
 Planning a new project? 
-and wants to brainstorm can use this whiteboard
+and wants to brainstorm can use this whiteboard.
 
 ![demo](./assets/demo.gif)
 
@@ -13,9 +13,9 @@ and wants to brainstorm can use this whiteboard
 Checkout live demo [here](https://alt-deleted-whiteboard.netlify.app/).
 
 ## Features 📑
-- Go digital😂! Jot down your thoughts and draw correlation
+- Go digital😂! Jot down your thoughts and draw correlation.
 - With this interactive whiteboard, you can save your work as a _.jpg_ file and take out a printout 🖨️
-- With this, you can write and annotate
+- With this, you can write and annotate.
 - Made a mistake!!!(oh snap 😰), no worries you can undo with the _undo_ button
 - Bad at making shapes? We got you! 
 
