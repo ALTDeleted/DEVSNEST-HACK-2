@@ -10,9 +10,7 @@ and wants to brainstorm can use this whiteboard
 
 ## Live Demo 🏁
 
-Checkout live demo [here](https://devsnest-hack-3.napster98766.repl.co/).
-
-sample video here[](video link)
+Checkout live demo [here](https://alt-deleted-whiteboard.netlify.app/).
 
 ## Features 📑
 - Go digital😂! Jot down your thoughts and draw correlation
