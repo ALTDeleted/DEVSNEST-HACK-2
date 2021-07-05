@@ -25,7 +25,7 @@ const drawCircle = (canvas,context,stroke,x0, y0, x1, y1, color, emit)=>{
 const drawReactangle =(canvas,context,stroke,x0,y0,x1,y1,color,emit)=>{
    var nDeltaX = Math.abs(x1 - x0);
   var nDeltaY = Math.abs(y1 - y0);
-  var radius = Math.sqrt(nDeltaX * nDeltaX + nDeltaY * nDeltaY)
+  // var radius = Math.sqrt(nDeltaX * nDeltaX + nDeltaY * nDeltaY)
   context.beginPath();
  // context.arc(x0, y0, radius, 0, Math.PI*2);
  context.strokeRect(x0, y0, nDeltaX, nDeltaY)
