@@ -43,13 +43,10 @@ function Tools() {
       </div>
 
       <div className="tool control" title="Circle">
-        <i className="far fa-circle circle" aria-hidden="true"></i>
+        <img className="far fa-circle circle" aria-hidden="true"></img>
       </div>
-      <div className="tool control" title="Square">
-        <i className="far fa-square square" aria-hidden="true"></i>
-      </div>
-      <div className="tool control" title="Triangle">
-        <i className="far fa-triangle triangle"  aria-hidden="true"></i>
+       <div className="tool control" title="Circle">
+        <img className="far fa-circle circle" aria-hidden="true"></img>
       </div>
     </div>
   </>

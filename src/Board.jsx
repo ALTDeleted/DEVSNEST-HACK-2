@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { drawLine, drawCircle } from "./DrawShapes";
+import { drawLine, drawCircle, drawReactangle } from "./DrawShapes";
 import Tools from "./Tools"
 import redo from "./Assets/redo.png"
 import save from "./Assets/diskette.png"
@@ -31,7 +31,6 @@ const Board = () => {
       canvasRef.current.getContext('2d').drawImage(img, 0, 0);
     };
   }
-
 
 
   // set the currentColor color
@@ -94,7 +93,7 @@ const Board = () => {
 
     const onMouseMove = (e) => {
       if (!drawing) { return; }
-      draw(canvas, context,currentColor.stroke, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
+      draw(canvas, context, currentColor.stroke, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
       if (draw == drawLine) {
         currentColor.x = e.clientX || e.touches[0].clientX;
         currentColor.y = e.clientY || e.touches[0].clientY;
@@ -102,11 +101,11 @@ const Board = () => {
     };
 
     const onMouseUp = (e) => {
-      // restore_array!drawing) { return; }
+      if (!drawing) { return; }
       drawing = false;
-      draw(canvas, context,currentColor.stroke, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
-      restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
-  index+=1;
+      draw(canvas, context, currentColor.stroke, currentColor.x, currentColor.y, e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, currentColor.color, true);
+      restore_array.push(context.getImageData(0, 0, canvas.width, canvas.height));
+      index += 1;
       saveToLocal();
     };
 
@@ -127,13 +126,12 @@ const Board = () => {
     //------------crosshair--------------------
 
     const cross = document.querySelector(".crosshair");
-    document.addEventListener("mousemove",(e)=>{
+    document.addEventListener("mousemove", (e) => {
       cross.style.transform = `translate(${e.clientX}px,${e.clientY}px)`
-      cross.stroke.width = currentColor.stroke;
-      cross.stroke.height = currentColor.stroke;
-
+      cross.style.width = currentColor.stroke + "px";
+      cross.style.height = `${currentColor.stroke}px`;
     })
-    
+
     // -------------- make the canvas fill its parent component -----------------
 
     const onResize = () => {
@@ -215,27 +213,27 @@ const Board = () => {
       currentColor.color = "white";
       draw = drawLine;
     }, false);
+
     //undo 
     const undoButton = document.querySelector(".undo")
     undoButton.addEventListener('click', (e) => {
-      if(index>=0)
-      {
-        index-=4;
-        // restore_array.pop();
-        // restore_array.pop();
-        // restore_array.pop();
-        // restore_array.pop();
-        
-        context.putImageData(restore_array[index],0,0)
+      if (index >= 0) {
+        index -= 4;
+        if (restore_array.length > 3) {
+          context.putImageData(restore_array[index], 0, 0)
+        }
+        else {
+          return;
+        }
       }
     })
 
     const redoButton = document.querySelector(".redo")
-    redoButton.addEventListener('click', (e) =>{
-          if(index<restore_array.length-1){
-      index+=4
-      context.putImageData(restore_array[index],0,0)
-    }
+    redoButton.addEventListener('click', (e) => {
+      if (index < restore_array.length - 1) {
+        index += 4
+        context.putImageData(restore_array[index], 0, 0)
+      }
     })
 
     const save = document.querySelector(".save");
@@ -261,10 +259,11 @@ const Board = () => {
     }, false)
 
     //-------- for stroke brushSizeControl
+
     const input = document.querySelector(".brushSizeControl input")
     input.addEventListener('change', () => {
-      currentColor.stroke = input.value
-    //   alert(currentColor.stroke)
+      currentColor.stroke = input.value;
+      //   alert(currentColor.stroke)
     })
 
 
@@ -313,17 +312,16 @@ const Board = () => {
   // ------------- The Canvas and color elements --------------------------
 
   return (<>
-    <link href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" rel="stylesheet" />
     <canvas ref={canvasRef} className="whiteboard" />
     <Tools ref={toolRef} />
     <div className="crosshair"></div>
     <div id="footer">
-      <button className="undo"><img src={undo}/></button>
-      <button className="redo"><img src={redo}/></button>
+      <button className="undo"><img src={undo} /></button>
+      <button className="redo"><img src={redo} /></button>
       <div className="brushSizeControl">
         <input type="range" defaultValue="20" min="2" max="100" />
       </div>
-      <button className="save"><img src={save}/></button>
+      <button className="save"><img src={save} /></button>
     </div>
   </>
   );
