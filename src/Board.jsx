@@ -21,12 +21,11 @@ const Board = () => {
 
   function saveToLocal() {
     localStorage.setItem("canvas-data", canvasRef.current.toDataURL());
-   
   }
 
   function loadFromLocal() {
     let dataURL = localStorage.getItem("canvas-data");
-    let img = new Image;
+    let img = new Image();
     img.src = dataURL;
     img.onload = function() {
       canvasRef.current.getContext('2d').drawImage(img, 0, 0);
@@ -44,8 +43,6 @@ const Board = () => {
   useEffect(() => {
 
     const canvas = canvasRef.current;
-    const tools = toolRef.current;
-
     const context = canvas.getContext('2d');
     //----------------------active icons---------------------
     let currentActive = document.querySelector(".control")
@@ -131,6 +128,7 @@ const Board = () => {
       cross.style.transform = `translate(${e.clientX-10}px,${e.clientY-10}px)`
       cross.style.width = currentColor.stroke + "px";
       cross.style.height = `${currentColor.stroke}px`;
+      cross.style.backgroundColor = currentColor.color;
     })
 
     // -------------- make the canvas fill its parent component -----------------
