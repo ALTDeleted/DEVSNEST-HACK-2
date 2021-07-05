@@ -6,6 +6,8 @@ This project was made by Team Aditya for [Devsnest](https://devsnest.in) Hackath
 Planning a new project? 
 and wants to brainstorm can use this whiteboard
 
+![demo](./assets/demo.gif)
+
 ## Live Demo 🏁
 
 Checkout live demo [here](https://devsnest-hack-3.napster98766.repl.co/).
